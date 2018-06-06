@@ -8,12 +8,8 @@ module Whereami
     register Sinatra::RespondWith
 
     helpers do
-      def remote_addr
-        request.env['REMOTE_ADDR'] || '127.0.0.1'
-      end
-
       def infra
-        infra_ips.fetch(remote_addr, 'unknown')
+        infra_ips.fetch(request.ip, 'unknown')
       end
     end
 
@@ -22,14 +18,14 @@ module Whereami
         f.json do
           JSON.pretty_generate(
             infra: infra,
-            ip: remote_addr
+            ip: request.ip
           ) + "\n"
         end
 
         f.txt do
           %W[
             infra=#{infra}
-            ip=#{remote_addr}
+            ip=#{request.ip}
           ].join("\n") + "\n"
         end
       end
